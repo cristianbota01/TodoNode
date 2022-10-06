@@ -1,5 +1,4 @@
 const express = require("express");
-const { send } = require("express/lib/response");
 const mongoose = require("mongoose")
 
 const app = express()
@@ -10,9 +9,9 @@ app.use(express.urlencoded({ extended: true }));
 mongoose.connect("mongodb://localhost/todo_list", { useNewUrlParser: true })
 
 const todo_schema = new mongoose.Schema({
-    username:String,
-    password:String,
-    todos:[
+    username: String,
+    password: String,
+    todos: [
         {
             todo_name: String,
             todo_img_path: String,
@@ -24,7 +23,6 @@ const todo_schema = new mongoose.Schema({
             complete: Boolean
         }
     ]
-    
 })
 
 const todos = mongoose.model("todos", todo_schema)
@@ -32,27 +30,28 @@ const todos = mongoose.model("todos", todo_schema)
 app.post("/", async (req, res) => {
 
     new_todo = new todos({
-        username:req.body.username,
-        password:req.body.password,
-        todos:[
-            
-        ]
+        username: req.body.username,
+        password: req.body.password,
+        todos: []
     })
 
     new_todo.save()
     res.json(req.body)
+
 })
 
 app.post("/add_todo", (req, res) => {
-    
-    todos.findByIdAndUpdate(req.body.user_id, 
+
+    todos.findByIdAndUpdate(req.body.user_id,
         {
-            "$push" : {"todos" : {
-                "todo_name": req.body.todo_name,
-                "todo_img_path": req.body.todo_img_path,
-                "todo_description": req.body.todo_description,
-                "complete": false
-            }}
+            "$push": {
+                "todos": {
+                    "todo_name": req.body.todo_name,
+                    "todo_img_path": req.body.todo_img_path,
+                    "todo_description": req.body.todo_description,
+                    "complete": false
+                }
+            }
         },
 
         function (err, managerparent) {
@@ -66,5 +65,4 @@ app.post("/add_todo", (req, res) => {
 
 app.listen(3000, () => {
     console.log("Server in ascolto sulla porta 3000...")
-
 })
