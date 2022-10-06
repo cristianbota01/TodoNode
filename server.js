@@ -27,17 +27,34 @@ const todo_schema = new mongoose.Schema({
 
 const todos = mongoose.model("todos", todo_schema)
 
-app.post("/", async (req, res) => {
+app.post("/registration", async (req, res) => {
 
-    new_todo = new todos({
-        username: req.body.username,
-        password: req.body.password,
-        todos: []
-    })
+    if ("username" in req.body && "password" in req.body) {
 
-    new_todo.save()
-    res.json(req.body)
+        var idd = await todos.exists({ username: req.body.username })
 
+        if (idd === null) {
+
+            if (req.body.username !== "" && req.body.password !== "") {
+                new_todo = new todos({
+                    username: req.body.username,
+                    password: req.body.password,
+                    todos: []
+                })
+            } else {
+                return res.json({ "response": { "ok": false, "error": "Compilare tutti i campi!" } })
+            }
+
+            new_todo.save((err, suc) => {
+                res.json({ "response": { "ok": true, "_id": suc._id.toString() } })
+            })
+
+        } else {
+            res.json({ "response": { "ok": false, "error": "Username già esistente!" } })
+        }
+    }else{
+        res.sendStatus(401)
+    }
 })
 
 app.post("/add_todo", (req, res) => {
