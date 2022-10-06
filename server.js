@@ -84,6 +84,18 @@ app.post("/login", async (req, res) => {
     }
 })
 
+app.use("/add_todo", (req, res, next) => {
+    if ("user_id" in req.body && "todo_name" in req.body && "todo_img_path" in req.body && "todo_description" in req.body) {
+        if (req.body.user_id !== "" && req.body.todo_name !== "" && req.body.todo_img_path !== "" && req.body.todo_description !== "") {
+            next()
+        } else {
+            res.json({ "response": { "ok": false, "error": "Compilare tutti i campi!" } })
+        }
+    } else {
+        res.sendStatus(401)
+    }
+})
+
 app.post("/add_todo", (req, res) => {
 
     todos.findByIdAndUpdate(req.body.user_id,
@@ -98,13 +110,14 @@ app.post("/add_todo", (req, res) => {
             }
         },
 
-        function (err, managerparent) {
-            if (err) throw err;
-            console.log(managerparent);
+        (err, suc) => {
+            if (suc !== null) {
+                res.json({ "response": { "ok": true } })
+            } else {
+                res.json({ "response": { "ok": false } })
+            }
         }
     )
-
-    res.send("ok")
 })
 
 app.listen(3000, () => {
